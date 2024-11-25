@@ -1,21 +1,35 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { GetUsersParamsDto } from './dtos/get-users-param.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDto } from './dtos/create-user.dto';
 
 /**
  * Class to connect to Users table and perform business operations.
  */
 @Injectable()
 export class UsersService {
-  /**
-   * Constructor for the UsersService class.
-   * @param authService The AuthService instance injected via dependency injection.
-   */
   constructor(
-    /** Injecting Auth Service */
-    @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService,
+    /** Injecting userRepository Service */
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
+
+  public async createUser(createUserDto: CreateUserDto) {
+    // Check is user exists with same email
+    const existingUser = await this.userRepository.findOne({
+      where: { email: createUserDto.email },
+    });
+    // Handle exception
+
+    // Create a new user
+    let newUser = this.userRepository.create(createUserDto);
+    newUser = await this.userRepository.save(newUser);
+
+    return newUser;
+  }
 
   /**
    * The method to get all the users from the database.
@@ -29,7 +43,6 @@ export class UsersService {
     limit: number,
     page: number,
   ) {
-    const isAuth = this.authService.isAuth();
     return [
       { firstName: 'John', email: 'john@doe.com' },
       { firstName: 'Alice', email: 'alice@doe.com' },
