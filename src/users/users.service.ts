@@ -54,7 +54,7 @@ export class UsersService {
    * @param id The unique identifier of the user.
    * @returns A user object with details like ID, name, and email.
    */
-  public findUserById(id: string) {
-    return { id: 123, firstName: 'John', email: 'john@doe.com' };
+  public async findOneById(id: number) {
+    return await this.userRepository.findOneBy({ id });
   }
 }
