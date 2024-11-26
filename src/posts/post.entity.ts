@@ -1,7 +1,6 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -48,10 +47,10 @@ export class Post {
   @Column({ type: 'timestamp', nullable: true })
   publishedOn?: Date;
 
-  @OneToOne(() => MetaOption, {
+  @OneToOne(() => MetaOption, (metaOptions) => metaOptions.post, {
     cascade: true,
+    eager: true,
   })
-  @JoinColumn()
   metaOptions?: MetaOption;
 
   tags?: string[];

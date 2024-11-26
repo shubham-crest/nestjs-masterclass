@@ -4,7 +4,6 @@ import { CreatePostDto } from './dtos/create-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './post.entity';
-import { MetaOption } from 'src/meta-options/meta-option.entity';
 
 @Injectable()
 export class PostsService {
@@ -24,9 +23,16 @@ export class PostsService {
     return await this.postRepository.save(post);
   }
 
-  public findAll(userId: string) {
-    console.log('userId', userId);
+  public async findAll(userId: string) {
     const user = this.userService.findUserById(userId);
-    return [{ user, ttile: 'test title', content: 'test content' }];
+    return await this.postRepository.find();
+  }
+
+  public async delete(id: number) {
+    // deleting the post
+    await this.postRepository.delete(id);
+
+    // confirmation
+    return { deleted: true, id };
   }
 }
